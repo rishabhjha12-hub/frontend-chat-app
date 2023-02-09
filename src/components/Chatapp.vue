@@ -1,7 +1,8 @@
 <template>
   <div>
     <form @submit.prevent="sendMessage">
-      <input v-model="message" type="text">
+      <input v-model="username" type="text" placeholder="Enter username">
+      <input v-model="message" type="text" placeholder="Enter message">
       <button type="submit">Send</button>
     </form>
     <ul>
@@ -16,6 +17,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      username: '',
       message: '',
       messages: []
     };
@@ -26,7 +28,8 @@ export default {
   },
   methods: {
     async sendMessage() {
-      await axios.post('http://localhost:3000/message', { message: this.message });
+      await axios.post('http://localhost:3000/message', { username: this.username, message: this.message });
+      this.username = '';
       this.message = '';
     },
     async listenForMessages() {
