@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>CHAT APP</h1>
     <form @submit.prevent="sendMessage">
       <input v-model="username" type="text" placeholder="Enter username">
       <input v-model="message" type="text" placeholder="Enter message">
@@ -42,3 +43,47 @@ export default {
   }
 };
 </script>
+<style>
+h1{
+  width: 300px;
+  height: 50px;
+  margin:auto;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 200px;
+  height: 30px;
+  margin-bottom: 10px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+button {
+  width: 100px;
+  height: 30px;
+  background-color: lightblue;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+}
+
+ul {
+  list-style-type: none;
+  width: 300px;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  padding: 10px;
+  border-bottom: 1px solid gray;
+}
+</style>
