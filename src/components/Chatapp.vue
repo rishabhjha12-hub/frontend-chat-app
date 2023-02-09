@@ -1,47 +1,12 @@
-<style>
-  h1 {
-    text-align: center;
-  }
-
-  .message {
-    padding: 12px 20px;
-    margin: 8px 0;
-    width:70vw;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    background-color: #f2f2f2;
-  }
-  .Input{
-     width: 50%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-  }
-  .InputMessage{
-    width:100%;
-    height:100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-  }
-</style>
 <template>
   <div>
-    <h1>Chat App</h1>
-    <div><input v-model="username" placeholder="Enter username" class="Input"/></div>
-    <div v-for="message in messages">
-      <div class="message">
-        {{ !message.username?"anonyms":message.username }}: {{ message.text }}
-      </div>
-    </div>
-    <div>
-      <input v-model="text" placeholder="Enter message" class="InputMessage" @keyup.enter="sendMessage" />
-    </div>
+    <form @submit.prevent="sendMessage">
+      <input v-model="message" type="text">
+      <button type="submit">Send</button>
+    </form>
+    <ul>
+      <li v-for="message in messages">{{ message }}</li>
+    </ul>
   </div>
 </template>
 
@@ -51,34 +16,25 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      messages: [],
-      username: '',
-      text: ''
+      message: '',
+      messages: []
     };
   },
-  mounted() {
-    this.getMessages();
-    setInterval(this.getMessages, 1000);
+  created() {
+    this.messages = JSON.parse(localStorage.getItem('messages')) || [];
+    this.listenForMessages();
   },
   methods: {
-    async getMessages() {
-      try {
-        const response = await axios.get('https://easy-pinafore-goat.cyclic.app/api/messages');
-        this.messages = response.data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
     async sendMessage() {
-      try {
-        await axios.post('https://easy-pinafore-goat.cyclic.app/api/messages', {
-          username: this.username,
-          text: this.text
-        });
-        this.text = '';
-      } catch (error) {
-        console.error(error);
-      }
+      await axios.post('http://localhost:3000/message', { message: this.message });
+      this.message = '';
+    },
+    async listenForMessages() {
+      const eventSource = new EventSource('http://localhost:3000/stream');
+      eventSource.onmessage = (event) => {
+        this.messages.push(event.data);
+        localStorage.setItem('messages', JSON.stringify(this.messages));
+      };
     }
   }
 };
